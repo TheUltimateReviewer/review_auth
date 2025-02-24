@@ -1,5 +1,6 @@
 package Review.auth.config;
 
+import Review.auth.config.jwt.JwtAuthenticationFilter;
 import Review.auth.services.UserDetailService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -22,6 +23,7 @@ import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,9 +36,16 @@ public class SecurityConfig {
     @Autowired
     private  CorsConfig corsConfig;
 
+
     //filter chain primer elemento a crear
+    @Autowired
+    private UserDetailsService userDetailsService;
+
+    @Autowired
+    private JwtAuthenticationFilter jwtAuthenticationFilter;
+
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http, UserDetailService userDetailService) throws Exception {
 
 
 
@@ -50,8 +59,11 @@ public class SecurityConfig {
                     //donde defino el funcionamiento
                     httpconf.requestMatchers(HttpMethod.GET,"test/uno").permitAll();
                     httpconf.requestMatchers("test/dos").hasAuthority("READ");
+                    httpconf.requestMatchers(HttpMethod.POST,"/auth/**").permitAll();
                     httpconf.anyRequest().authenticated();
                 })
+                .authenticationProvider(authenticationProvider(userDetailService))
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
 

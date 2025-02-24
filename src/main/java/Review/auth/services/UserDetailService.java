@@ -22,31 +22,7 @@ public class UserDetailService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 
-
-        UserEntity userEntity = this.userRepository.findUserEntityByUsername(username)
-                .orElseThrow(()->new UsernameNotFoundException("usuario inexistente"));
-
-        //mapear el granted authorities con el UserEntity, que en ese particular caso tiene los mismos valores aunque tengo entendido que se puede hacer personalizado
-        List<SimpleGrantedAuthority> authorities = new ArrayList<>();
-
-        //convertir los roles a un simple granted auth
-        userEntity.getRoles().forEach(
-                role -> authorities.add(new SimpleGrantedAuthority("ROLE_".concat(role.getRoleEnum().name())))
-                );
-
-        userEntity.getRoles().stream()
-                .flatMap(role ->role.getPermissionList().stream())
-                .forEach(permission -> authorities.add(new SimpleGrantedAuthority(permission.getPermission())));
-
-        return new User(userEntity.getUsername(),
-                userEntity.getPassword(),
-                userEntity.isEnabled(),
-                userEntity.isAccountNonExpired(),
-                userEntity.isCredentialsNonExpired(),
-                userEntity.isAccountNonLocked(),
-                authorities
-        );
-
+        return this.userRepository.findUserEntityByUsername(username).orElseThrow(() -> new UsernameNotFoundException(username));
 
     }
 
