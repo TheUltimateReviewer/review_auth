@@ -2,6 +2,7 @@ package Review.auth.services;
 
 import Review.auth.models.UserEntity;
 import Review.auth.respositories.UserRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
@@ -20,9 +21,12 @@ public class UserDetailService implements UserDetailsService {
     private UserRepository userRepository;
 
     @Override
+    @Transactional
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 
-        return this.userRepository.findUserEntityByUsername(username).orElseThrow(() -> new UsernameNotFoundException(username));
+        UserDetails user = this.userRepository.findUserEntityByUsername(username).orElseThrow(() -> new UsernameNotFoundException(username));
+        user.getAuthorities().size();
+        return user;
 
     }
 

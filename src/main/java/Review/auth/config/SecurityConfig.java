@@ -58,7 +58,7 @@ public class SecurityConfig {
 
                     //donde defino el funcionamiento
                     httpconf.requestMatchers(HttpMethod.GET,"test/uno").permitAll();
-                    httpconf.requestMatchers("test/dos").hasAuthority("READ");
+                    httpconf.requestMatchers("test/dos").authenticated();
                     httpconf.requestMatchers(HttpMethod.POST,"/auth/**").permitAll();
                     httpconf.anyRequest().authenticated();
                 })
