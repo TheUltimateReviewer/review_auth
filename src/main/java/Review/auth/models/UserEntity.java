@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
 
 public class UserEntity implements UserDetails {
     @Id
-    @GeneratedValue(strategy =  GenerationType.AUTO)
+    @GeneratedValue(strategy =  GenerationType.IDENTITY)
     private Long id;
 
     @Getter @Setter
