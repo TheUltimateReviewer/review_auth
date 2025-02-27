@@ -23,7 +23,7 @@ public class RoleService {
         return role.stream().flatMap(particularRole -> {
             String roleWithoutPrefix = particularRole.replace("ROLE_", "");
              return this.roleRepository
-                    .findPermissionsByRole(RoleEnum.valueOf(roleWithoutPrefix))
+                    .findPermissionsByRole(roleWithoutPrefix)
                     .orElseThrow(() -> new NoSuchElementException("no hay role"))
                     .stream();
         }).collect(Collectors.toSet());
