@@ -18,6 +18,7 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 @Data
 @Table(name = "app_user")
+
 public class UserEntity implements UserDetails {
     @Id
     @GeneratedValue(strategy =  GenerationType.AUTO)

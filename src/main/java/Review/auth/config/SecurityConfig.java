@@ -59,11 +59,12 @@ public class SecurityConfig {
                     //donde defino el funcionamiento
                     httpconf.requestMatchers(HttpMethod.GET,"test/uno").permitAll();
                     httpconf.requestMatchers("test/dos").authenticated();
-                    httpconf.requestMatchers(HttpMethod.POST,"/auth/**").permitAll();
+                    httpconf.requestMatchers(HttpMethod.POST, "/**").permitAll();
+                    httpconf.requestMatchers(HttpMethod.GET,"/**").permitAll();
                     httpconf.anyRequest().authenticated();
                 })
                 .authenticationProvider(authenticationProvider(userDetailService))
-                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+                //.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
 

@@ -45,34 +45,58 @@ public class JwtService {
     }
 
     public String getUsernameFromToken(String token) {
-        return getClaim(token, Claims::getSubject);
-
+        try {
+            return getClaim(token, Claims::getSubject);
+        }catch (Exception e) {
+            return null;
+        }
     }
 
     public boolean isTokenValid(String token, UserDetails userDetails) {
-        final String username = getUsernameFromToken(token);
-        return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
-
+        try {
+            final String username = getUsernameFromToken(token);
+            return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
+        }catch (Exception e) {
+            return false;
+        }
     }
 
     public Claims getClaimsFromToken(String token) {
-        return Jwts.parser()
-                .setSigningKey(getKey())
-                .build()
-                .parseClaimsJws(token)
-                .getBody();
+        try {
+            return Jwts.parser()
+                    .setSigningKey(getKey())
+                    .build()
+                    .parseClaimsJws(token)
+                    .getBody();
+
+        }catch (Exception e) {
+            return null;
+        }
     }
 
     public <T> T getClaim(String token, Function<Claims,T> claimsResolver){
-        final Claims claims = getClaimsFromToken(token);
-        return claimsResolver.apply(claims);
+        try {
+            final Claims claims = getClaimsFromToken(token);
+            return claimsResolver.apply(claims);
+        }catch (Exception e) {
+            return null;
+        }
     }
 
-    private Date getExpiration(String token){
-        return getClaim(token, Claims::getExpiration);
+    private Date getExpiration(String token) {
+        try {
+            return getClaim(token, Claims::getExpiration);
+        } catch (Exception e) {
+            return null;
+        }
     }
 
     private boolean isTokenExpired(String token){
-        return getExpiration(token).before(new Date());
+        try {
+            return getExpiration(token).before(new Date());
+        }catch (Exception e){
+            return true;
+        }
+
     }
 }

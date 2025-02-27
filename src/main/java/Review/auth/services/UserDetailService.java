@@ -1,6 +1,8 @@
 package Review.auth.services;
 
 import Review.auth.models.UserEntity;
+import Review.auth.respositories.PermissionRepository;
+import Review.auth.respositories.RoleRepository;
 import Review.auth.respositories.UserRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +21,12 @@ public class UserDetailService implements UserDetailsService {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private PermissionRepository permissionRepository;
+
+    @Autowired
+    private RoleRepository roleRepository;
 
     @Override
     @Transactional
