@@ -57,6 +57,8 @@ public class AuthService {
         UserEntity user = UserEntity.builder().username(registerRequest.getUsername())
                 .password(passwordEncoder.encode(registerRequest.getPassword()))
                 .roles(Set.of(this.roleRepository.findById(Long.valueOf(2)).orElseThrow(() -> new Exception("Role not found"))))
+                .email(registerRequest.getEmail())
+                .phone(registerRequest.getPhone())
                 .isEnabled(true)
                 .accountNonExpired(true)
                 .accountNonLocked(true)

@@ -24,13 +24,18 @@ public class UserEntity implements UserDetails {
     @GeneratedValue(strategy =  GenerationType.IDENTITY)
     private Long id;
 
-    @Getter @Setter
+
     @Column(unique = true, nullable = false, name = "username")
     private String username;
 
     @Column(nullable = false, name = "password")
     private String password;
 
+    @Column(unique = true, nullable = false, name = "email")
+    private String email;
+
+    @Column(name = "phone")
+    private String phone;
 
     @Column(name = "is_enabled")
     private boolean isEnabled;
