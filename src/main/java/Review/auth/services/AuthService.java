@@ -3,6 +3,7 @@ package Review.auth.services;
 import Review.auth.Dtos.AuthResponse;
 import Review.auth.Dtos.LoginRequest;
 import Review.auth.Dtos.RegisterRequest;
+import Review.auth.Dtos.UserDTO;
 import Review.auth.models.UserEntity;
 import Review.auth.respositories.RoleRepository;
 import Review.auth.respositories.UserRepository;
@@ -33,6 +34,9 @@ public class AuthService {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private RabbitmqProducer rabbitmqProducer;
 
     @Autowired
     private AuthenticationManager authenticationManager;
@@ -66,6 +70,19 @@ public class AuthService {
                 .build();
 
         this.userRepository.save(user);
+        try {
+            this.rabbitmqProducer.sendMessage("user.exchange", "user.created", UserDTO.builder()
+                    .userId(user.getId())
+                    .username(user.getUsername())
+                    .build()
+
+            );
+
+        }catch (Exception e){
+            e.printStackTrace();
+            throw new RuntimeException("error al enviar mensaje por cola");
+        }
+
 
         return AuthResponse.builder()
                 .token(this.jwtService.getToken(user))
