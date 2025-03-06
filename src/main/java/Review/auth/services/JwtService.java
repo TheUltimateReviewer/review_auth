@@ -21,12 +21,15 @@ public class JwtService {
     private static final String SECRET_KEY = "KjFhT3JXc2pYNkpQRVZ2QlFid0Z5anNTV2d3NUZHQmQ=";
 
 
-    public String getToken(UserDetails user) {
-        return getToken(new HashMap<>(), user);
+    public String getToken(UserDetails user, Long user_id, Long profile_id) {
+        return getToken(new HashMap<>(), user, user_id, profile_id);
     }
 
 
-    public String getToken(Map<String, Object> extraClaims, UserDetails user) {
+    public String getToken(Map<String, Object> extraClaims, UserDetails user, Long user_id, Long profile_id) {
+       extraClaims.put("user_id", user_id);
+       extraClaims.put("roles", user.getAuthorities());
+       extraClaims.put("profile_id", profile_id);
         return Jwts
                 .builder()
                 .setClaims(extraClaims)

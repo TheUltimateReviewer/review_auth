@@ -43,7 +43,7 @@ public class AuthController {
         return ResponseEntity.ok().body(this.authService.register(request));
     }
 
-    @GetMapping("/validate")
+   /* @GetMapping("/validate")
     public ResponseEntity<?> validateToken(@RequestHeader(HttpHeaders.AUTHORIZATION) String token){
 
 
@@ -70,5 +70,7 @@ public class AuthController {
         }
 
     }
+    */
+
 
 }

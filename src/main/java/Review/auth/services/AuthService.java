@@ -10,8 +10,10 @@ import Review.auth.respositories.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cloud.stream.function.StreamBridge;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -35,8 +37,11 @@ public class AuthService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    //@Autowired
+    //private RabbitmqProducer rabbitmqProducer;
+
     @Autowired
-    private RabbitmqProducer rabbitmqProducer;
+    private StreamBridge streamBridge;
 
     @Autowired
     private AuthenticationManager authenticationManager;
@@ -46,8 +51,9 @@ public class AuthService {
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
         UserDetails user = this.userRepository.findUserEntityByUsername(loginRequest.getUsername())
                 .orElseThrow(()->new UsernameNotFoundException("No existe ese usuario"));
+        UserEntity userWithId = this.userRepository.findUserEntityByUsername(loginRequest.getUsername()).get();
 
-        String token = this.jwtService.getToken(user);
+        String token = this.jwtService.getToken(user, userWithId.getId(), userWithId.getProfileId());
 
 
         return AuthResponse.builder()
@@ -64,13 +70,23 @@ public class AuthService {
                 .email(registerRequest.getEmail())
                 .phone(registerRequest.getPhone())
                 .isEnabled(true)
+                .profileId(Long.valueOf(0))
                 .accountNonExpired(true)
                 .accountNonLocked(true)
                 .credentialsNonExpired(true)
                 .build();
 
-        this.userRepository.save(user);
-        try {
+        UserEntity userWithId=this.userRepository.save(user);
+        boolean sent = streamBridge.send("userCreated-out-0", UserDTO.builder()
+                .userId(user.getId())
+                .username(user.getUsername())
+                .build()
+        );
+        if (!sent) {
+            // Aquí puedes manejar el error de envío según tus necesidades
+            throw new RuntimeException("Error al enviar el evento de creación de usuario");
+        }
+ /*       try {
             this.rabbitmqProducer.sendMessage("user.exchange", "user.created", UserDTO.builder()
                     .userId(user.getId())
                     .username(user.getUsername())
@@ -82,10 +98,10 @@ public class AuthService {
             e.printStackTrace();
             throw new RuntimeException("error al enviar mensaje por cola");
         }
-
+*/
 
         return AuthResponse.builder()
-                .token(this.jwtService.getToken(user))
+                .token(this.jwtService.getToken(user, userWithId.getId(), userWithId.getProfileId()))
                 .build();
     }
 

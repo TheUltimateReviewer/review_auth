@@ -2,12 +2,37 @@ spring:
   application:
     name: auth-service
 
+
   rabbitmq:
-    host: localhost
-    port: 5672
-    username: admin
-    password: admin
-    virtual-host: /
+    dynamic: true # Habilita la creación automática de recursos
+  cloud:
+    stream:
+      bindings:
+        userCreated-out-0: # Nombre del binding de salida
+          destination: userCreatedExchange # Nombre del exchange en RabbitMQ
+          binder: rabbit # Especifica que usas RabbitMQ
+        profileCreated-in-0:
+          destination: profileCreatedExchange
+          group: authGroup
+      binders:
+        rabbit:
+          type: rabbit # Define el binder para RabbitMQ
+          environment:
+            spring:
+              rabbitmq:
+                host: localhost # Dirección del servidor RabbitMQ
+                port: 5672 # Puerto de RabbitMQ
+                username: admin # Usuario de RabbitMQ
+                password: admin # Contraseña de RabbitMQ
+
+  #rabbitmq:
+   # host: localhost
+  #  port: 5672
+  #  username: admin
+ #   password: admin
+#    virtual-host: /
+
+
 
   datasource:
     url: jdbc:postgresql://localhost:5432/auth_db
@@ -22,6 +47,7 @@ spring:
     #hibernate:
       #ddl-auto: update
     show-sql: true
+
 
 server:
   port: 8081
@@ -41,3 +67,5 @@ logging:
       springframework:
         amqp: DEBUG
         messaging: DEBUG
+
+
