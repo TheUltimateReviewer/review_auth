@@ -20,7 +20,7 @@ spring:
           environment:
             spring:
               rabbitmq:
-                host: localhost # Dirección del servidor RabbitMQ
+                host: ${RABBITMQ_HOST:localhost}
                 port: 5672 # Puerto de RabbitMQ
                 username: admin # Usuario de RabbitMQ
                 password: admin # Contraseña de RabbitMQ
@@ -35,7 +35,8 @@ spring:
 
 
   datasource:
-    url: jdbc:postgresql://localhost:5432/auth_db
+
+    url: jdbc:postgresql://${POSTGRES_HOST:localhost}:5432/auth_db
     username: miusuario
     password: '2304'
     driver-class-name: org.postgresql.Driver
@@ -57,9 +58,11 @@ server:
 eureka:
   client:
     service-url:
-      defaultZone: http://localhost:8761/eureka/
+      defaultZone: http://${EUREKA_HOST:localhost}:8761/eureka/
     fetch-registry: true
     register-with-eureka: true
+  instance:
+    hostname: ${EUREKA_INSTANCE_HOST:localhost}
 
 logging:
   level:
